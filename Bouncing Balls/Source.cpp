@@ -26,13 +26,15 @@ int main()
 	sf::Text sf_frameTime(textFrameTime.str(), font, 20);
 	sf_frameTime.setPosition(sf::Vector2f(10, 10));
 
-	sf::Text sf_legends("Keyboard Input\n1. Press SPACE to pause.\n2. Press R to reset.", font, 20);
+	sf::Text sf_legends("Keyboard Input\n1. Press SPACE to pause.\n2. Press R to reset.\n3.Press M to change mode.", font, 20);
 	sf_legends.setPosition(SCREEN_WIDTH - 10 - sf_legends.getGlobalBounds().width, 10);
 
-	Particles particles(sf::Color::Green);
+	Particles particles(sf::Color::Green, QUANTITY);
+	Particles particles_low(sf::Color::Red, QUANTITY_LOW);
 
 	bool paused = false;
 	bool reset = false;
+	bool mode = false;
 
 	while (window.isOpen())
 	{
@@ -49,6 +51,8 @@ int main()
 					paused = !paused;
 				if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
 					reset = true;
+				if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
+					mode = !mode;
 			}
 		}
 
@@ -57,15 +61,24 @@ int main()
 		sf_frameTime.setString(textFrameTime.str());
 
 		if (!paused)
-			particles.update(frameTime);
+		{
+			if (mode)
+				particles.update(frameTime);
+			else
+				particles_low.update(frameTime);
+		}
 		if (reset)
 		{
 			particles.reset();
+			particles_low.reset();
 			reset = false;
 		}
 
 		window.clear();
-		particles.draw(window);
+		if (mode)
+			particles.draw(window);
+		else
+			particles_low.draw(window);
 		window.draw(sf_frameTime);
 		window.draw(sf_legends);
 		window.display();

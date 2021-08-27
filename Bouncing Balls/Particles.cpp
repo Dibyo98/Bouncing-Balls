@@ -20,13 +20,14 @@ float dotProduct(const sf::Vector2f& a, const sf::Vector2f& b)
 	return a.x * b.x + a.y * b.y;
 }
 
-Particles::Particles(const sf::Color& colour)
+Particles::Particles(const sf::Color& colour, const int& quantity)
+	:m_quantity(quantity)
 {
-	m_particles = new sf::CircleShape[QUANTITY];
-	m_positions = new sf::Vector2f[QUANTITY];
-	m_velocities = new sf::Vector2f[QUANTITY];
+	m_particles = new sf::CircleShape[m_quantity];
+	m_positions = new sf::Vector2f[m_quantity];
+	m_velocities = new sf::Vector2f[m_quantity];
 
-	for (int i = 0; i < QUANTITY; i++)
+	for (int i = 0; i < m_quantity; i++)
 	{
 		m_particles[i].setRadius(RADIUS);
 		m_particles[i].setOrigin(sf::Vector2f(RADIUS, RADIUS));
@@ -43,7 +44,7 @@ Particles::Particles(const sf::Color& colour)
 
 void Particles::reset()
 {
-	for (int i = 0; i < QUANTITY; i++)
+	for (int i = 0; i < m_quantity; i++)
 	{
 		m_positions[i].x = (float(rand()) / RAND_MAX) * SCREEN_WIDTH;
 		m_positions[i].y = (float(rand()) / RAND_MAX) * SCREEN_HEIGHT;
@@ -63,7 +64,7 @@ Particles::~Particles()
 
 void Particles::update(const float& frameTime)
 {
-	for (int i = 0; i < QUANTITY; i++)
+	for (int i = 0; i < m_quantity; i++)
 	{
 		m_velocities[i].y += G * frameTime * 0.01f;
 
@@ -74,7 +75,7 @@ void Particles::update(const float& frameTime)
 	frictionCheck(frameTime);
 	collisionCheck(frameTime);
 
-	for (int i = 0; i < QUANTITY; i++)
+	for (int i = 0; i < m_quantity; i++)
 	{
 		m_particles[i].setPosition(m_positions[i]);
 	}
@@ -82,7 +83,7 @@ void Particles::update(const float& frameTime)
 
 void Particles::boundsCheck()
 {
-	for (int i = 0; i < QUANTITY; i++)
+	for (int i = 0; i < m_quantity; i++)
 	{
 		if (m_positions[i].x < RADIUS || m_positions[i].x > SCREEN_WIDTH - RADIUS)
 		{
@@ -99,7 +100,7 @@ void Particles::boundsCheck()
 
 void Particles::frictionCheck(const float& frameTime)
 {
-	for (int i = 0; i < QUANTITY; i++)
+	for (int i = 0; i < m_quantity; i++)
 	{
 		float ratio = 1.0f / (1.0f + (frameTime * FK));
 		if (fEquals(m_velocities[i].x * frameTime * 0.01f, 0.0f) && (fEquals(m_positions[i].x, RADIUS) || fEquals(m_positions[i].x, SCREEN_WIDTH - RADIUS)))
@@ -115,9 +116,9 @@ void Particles::frictionCheck(const float& frameTime)
 
 void Particles::collisionCheck(const float& frameTime)
 {
-	for (int i = 0; i < QUANTITY; i++)
+	for (int i = 0; i < m_quantity; i++)
 	{
-		for (int j = 0; j < QUANTITY && j != i; j++)
+		for (int j = 0; j < m_quantity && j != i; j++)
 		{
 			float x1 = m_positions[i].x;
 			float y1 = m_positions[i].y;
@@ -152,7 +153,7 @@ void Particles::collisionCheck(const float& frameTime)
 
 void Particles::draw(sf::RenderWindow& window)
 {
-	for (int i = 0; i < QUANTITY; i++)
+	for (int i = 0; i < m_quantity; i++)
 	{
 		window.draw(m_particles[i]);
 	}
